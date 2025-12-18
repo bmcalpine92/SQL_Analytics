@@ -4,7 +4,7 @@
 
 
 ---------------------------------------------------
--- SECTION 1: Aggreate Fuctions (Q1–Q10)
+-- SECTION 1: Aggregate Fuctions (Q1–Q10)
 ---------------------------------------------------
 
 
@@ -50,7 +50,7 @@ ORDER BY total_regional_revenue DESC;
 
 ---------------------------------------------------
 
--- Question #6: What is the average number of days it takes to close a deal for each buisness size?
+-- Question #6: What is the average number of days it takes to close a deal for each business size?
 SELECT
   business_size,
   ROUND(AVG(days_to_close), 1) AS avg_days_to_close
@@ -61,7 +61,7 @@ ORDER BY avg_days_to_close DESC;
 
 ---------------------------------------------------
 
--- Question #7: What is the maximum shippping cost for each shipping mode?
+-- Question #7: What is the maximum shipping cost for each shipping mode?
 SELECT 
   shipping_mode,
   MAX(shipping_cost) AS max_shipping_cost
@@ -97,8 +97,8 @@ ORDER BY avg_order_price DESC;
 
 -- Question #10: What are the highest and lowest customer ratings recorded?
 SELECT 
-    MIN(rating) AS lowest_rating,
-    MAX(rating) AS highest_rating
+  MIN(rating) AS lowest_rating,
+  MAX(rating) AS highest_rating
 FROM tutorial.dunder_mifflin_paper_sales
 WHERE rating IS NOT NULL;
 
@@ -108,18 +108,37 @@ WHERE rating IS NOT NULL;
 ---------------------------------------------------
 
 
--- Question #11:
-
+-- Question #11: Calculate the total revenue for each order after including shipping cost. 
+SELECT 
+  order_id, 
+  ROUND((price * quantity + shipping_cost), 2) AS total_revenue_plus_shipping
+FROM tutorial.dunder_mifflin_paper_sales
+WHERE status = 'COMPLETED'
+  AND shipping_cost IS NOT NULL     -- Orders with NULL shipping_cost values are excluded due to missing data.
+ORDER BY total_revenue_plus_shipping DESC;
 
 ---------------------------------------------------
 
--- Question #12:
-
+-- Question #12: Calculate the net revenue for each order, accounting for applied discounts.
+SELECT 
+  order_id, 
+  ROUND((price * quantity - discount), 2) AS net_revenue
+FROM tutorial.dunder_mifflin_paper_sales
+WHERE status = 'COMPLETED'
+  AND discount IS NOT NULL     -- Orders with NULL discount values are excluded due to missing data.
+ORDER BY net_revenue DESC;
 
 ---------------------------------------------------
 
--- Question #13:
-
+-- Question #13: Calculate the average revenue per unit sold for each product. 
+SELECT
+  product_id,
+  product_name,
+  ROUND(AVG((price * quantity - discount) / quantity), 2) AS avg_revenue_per_unit
+FROM tutorial.dunder_mifflin_paper_sales
+WHERE discount IS NOT NULL     -- Orders with NULL discount values are excluded due to missing data.
+GROUP BY product_id, product_name
+ORDER BY avg_revenue_per_unit DESC;
 
 
 ---------------------------------------------------
@@ -127,7 +146,21 @@ WHERE rating IS NOT NULL;
 ---------------------------------------------------
 
 
--- Question #14: 
+-- Question #14: Identify which accounts generate the most revenue, considering price, quantity, and discounts. Aggreate total revenue per account and order from highest to lowest. 
+SELECT
+  account_id,
+  account_name,
+  ROUND(SUM((price * quantity) - discount), 2) AS total_revenue
+FROM tutorial.dunder_mifflin_paper_sales
+WHERE status = 'COMPLETED'
+  AND discount IS NOT NULL     -- Orders with NULL discount values are excluded due to missing data.
+GROUP BY account_id, account_name
+ORDER BY total_revenue DESC;
 
-
--- Question #15:
+-- Question #15: Determine the average number of days to ship orders for each shipping region, helping operations spot slow regions. 
+SELECT 
+  shipping_region,
+  ROUND(AVG(days_to_ship), 1) AS avg_days_to_ship
+FROM tutorial.dunder_mifflin_paper_sales
+GROUP BY shipping_region
+ORDER BY avg_days_to_ship DESC;

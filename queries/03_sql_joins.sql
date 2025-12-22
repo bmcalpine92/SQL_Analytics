@@ -204,10 +204,27 @@ ORDER BY product_id;
 
 
 -- Question #15: Which products have high inventory levels but no transaction activity?
-
+SELECT 
+  i.product_id,
+  i.product_name,
+  i.product_type,
+  i.current_inventory
+FROM tutorial.excel_sql_inventory_data AS i
+LEFT JOIN tutorial.excel_sql_transaction_data AS t
+  ON i.product_id = t.product_id
+WHERE t.transaction_id IS NULL
+ORDER BY i.current_inventory DESC;
 
 ---------------------------------------------------
 
 -- Question #16: Which product types show the most transaction activity overall?
-
-
+SELECT 
+  i.product_type,
+  COUNT(t.transaction_id) AS transaction_count
+FROM tutorial.excel_sql_inventory_data AS i
+LEFT JOIN tutorial.excel_sql_transaction_data AS t
+  ON i.product_id = t.product_id
+GROUP BY
+  i.product_type
+HAVING COUNT(t.transaction_id) > 50   -- Chosen to highlight higher transaction counts. 
+ORDER BY transaction_count DESC;

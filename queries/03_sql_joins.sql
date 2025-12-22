@@ -160,22 +160,42 @@ INNER JOIN tutorial.excel_sql_inventory_data AS i2
 
 
 -- Question #11: Which product IDs appear in both datasets?
-
+SELECT product_id
+FROM tutorial.excel_sql_inventory_data
+INTERSECT
+SELECT product_id
+FROM tutorial.excel_sql_transaction_data
+ORDER BY product_id;
 
 ---------------------------------------------------
 
 -- Question #12: Which products exist in inventory but have never been transacted?
-
+SELECT product_id
+FROM tutorial.excel_sql_inventory_data
+EXCEPT
+SELECT product_id
+FROM tutorial.excel_sql_transaction_data
+ORDER BY product_id;
 
 ---------------------------------------------------
 
 -- Question #13: List all product IDs from both tables, including duplicates.
-
+SELECT product_id
+FROM tutorial.excel_sql_inventory_data
+UNION ALL
+SELECT product_id
+FROM tutorial.excel_sql_transaction_data
+ORDER BY product_id;
 
 ---------------------------------------------------
 
 -- Question #14: List all unique product IDs across both tables.
-
+SELECT product_id
+FROM tutorial.excel_sql_inventory_data
+UNION
+SELECT product_id
+FROM tutorial.excel_sql_transaction_data
+ORDER BY product_id;
 
 
 ---------------------------------------------------

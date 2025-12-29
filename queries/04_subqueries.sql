@@ -111,13 +111,39 @@ WHERE product_id IN (
 
 
 -- Question #9: Create a derived table that counts transactions per product, then return only products with fewer than 5 transactions.
-
+SELECT 
+  i.product_id,
+  i.product_name,
+  i.product_type,
+  i.current_inventory,
+  t.transaction_count 
+FROM tutorial.excel_sql_inventory_data AS i
+INNER JOIN (
+  SELECT 
+    product_id,
+    COUNT(transaction_id) AS transaction_count
+  FROM tutorial.excel_sql_transaction_data
+  GROUP BY product_id
+  HAVING COUNT(transaction_id) <= 5) AS t
+ON i.product_id = t.product_id;
 
 -- Question #10: Calculate the average number of transactions per product.
-
+SELECT 
+    ROUND(AVG(transaction_count), 2) AS avg_transactions_per_product
+FROM (
+    SELECT 
+        product_id,
+        COUNT(*) AS transaction_count
+    FROM tutorial.excel_sql_transaction_data
+    GROUP BY product_id) AS t;
 
 -- Question #11: Create a temporary result set of products with transactions, then join it back to inventory.
-
+SELECT i.*
+FROM tutorial.excel_sql_inventory_data AS i
+INNER JOIN (
+  SELECT DISTINCT product_id
+  FROM tutorial.excel_sql_transaction_data) AS t
+ON i.product_id = t.product_id;
 
 ---------------------------------------------------
 -- SECTION 4: SELECT Subqueries (Q12–Q13)

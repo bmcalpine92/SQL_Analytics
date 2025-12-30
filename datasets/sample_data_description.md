@@ -52,3 +52,4 @@
 - **Used in SQL Files:**
   - `03_sql_joins.sql`
     - **Notes:** These tables are used to demonstrate INNER, LEFT, RIGHT, FULL, CROSS, and SELF joins, as well as set operations like UNION, INTERSECT, and EXCEPT.
+  - `04_subqueries.sql`

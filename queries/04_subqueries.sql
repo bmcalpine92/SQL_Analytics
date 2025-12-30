@@ -131,10 +131,10 @@ ON i.product_id = t.product_id;
 SELECT 
     ROUND(AVG(transaction_count), 2) AS avg_transactions_per_product
 FROM (
-    SELECT 
-        product_id,
-        COUNT(*) AS transaction_count
-    FROM tutorial.excel_sql_transaction_data
+  SELECT 
+    product_id,
+    COUNT(*) AS transaction_count
+  FROM tutorial.excel_sql_transaction_data
     GROUP BY product_id) AS t;
 
 -- Question #11: Create a temporary result set of products with transactions, then join it back to inventory.
@@ -151,10 +151,23 @@ ON i.product_id = t.product_id;
 
 
 -- Question #12: For each product, show its transaction count alongside the product name.
-
+SELECT 
+  i.product_name,
+  (SELECT COUNT(transaction_id)
+    FROM tutorial.excel_sql_transaction_data AS t
+    WHERE t.product_id = i.product_id) AS transaction_count
+FROM tutorial.excel_sql_inventory_data AS i
+ORDER BY transaction_count DESC;
 
 -- Question #13: Show each product and the maximum transaction timestamp associated with it.
-
+SELECT 
+  i.product_id,
+  i.product_name,
+  (SELECT MAX(time)
+    FROM tutorial.excel_sql_transaction_data AS t
+    WHERE i.product_id = t.product_id) AS max_timestamp
+FROM tutorial.excel_sql_inventory_data AS i
+ORDER BY i.product_id;
 
 ---------------------------------------------------
 -- SECTION 5: Business Scenarios (Q14–Q15)
@@ -162,7 +175,32 @@ ON i.product_id = t.product_id;
 
 
 -- Question #14: Which products should be reviewed for overstock risk (high inventory, low transaction volume)?
-
+SELECT 
+  i.product_id,
+  i.product_name,
+  i.product_type,
+  i.current_inventory,
+  (SELECT COUNT(transaction_id)
+  FROM tutorial.excel_sql_transaction_data AS t
+  WHERE t.product_id = i.product_id) AS transaction_count
+FROM tutorial.excel_sql_inventory_data AS i
+WHERE i.current_inventory > (
+    SELECT COUNT(t.transaction_id)
+    FROM tutorial.excel_sql_transaction_data AS t
+    WHERE t.product_id = i.product_id)
+ORDER BY i.current_inventory DESC, transaction_count;
 
 -- Question #15: Which product types generate the most transaction activity, based on product-level rollups?
-
+SELECT 
+  i.product_type,
+  SUM(t.transaction_count) AS total_transactions
+FROM tutorial.excel_sql_inventory_data AS i
+INNER JOIN (
+  SELECT 
+    product_id,
+    COUNT(transaction_id) AS transaction_count
+  FROM tutorial.excel_sql_transaction_data
+  GROUP BY product_id) AS t
+ON i.product_id = t.product_id
+GROUP BY i.product_type
+ORDER BY total_transactions DESC;

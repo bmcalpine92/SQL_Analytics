@@ -12,7 +12,8 @@ FROM table_name;
 **Filtering**
 - WHERE to restrict rows based on conditions
 - Combine conditions: AND, OR
-- Pattern matching: LIKE '%pattern%'
+- Pattern matching: LIKE '%pattern%' or '_an%'
+  - LIKE is a case-sensitive operator, while ILIKE is case-insensitive, meaning it does not differentiate between uppercase and lowercase letters. 
 - Unique rows: DISTINCT
 
 **Sorting**
